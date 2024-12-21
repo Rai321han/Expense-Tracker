@@ -13,11 +13,12 @@ export default function NavBar() {
         </div>
 
         <div className="block">
-          {/* <ul className="flex gap-4 text-gray-500  font-medium justify-center">
+          <ul className="flex gap-4 text-gray-500  font-medium justify-center">
             <li className="px-3 py-2 bg-teal-700 rounded-lg text-white cursor-pointer text-sm">
               Export this month
             </li>
-          </ul> */}
+            {/* <li>History</li> */}
+          </ul>
         </div>
 
         <div className=" flex flex-row gap-2 justify-end">
