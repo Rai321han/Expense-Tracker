@@ -1,39 +1,47 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useAddExpenseData from "./hooks/useAddExpenseData";
+import useAddIncomeData from "./hooks/useAddIncomeData";
+import useDelete from "./hooks/useDelete";
+import useUpdateData from "./hooks/useUpdateData";
+import { useDispatch, useSelector } from "react-redux";
+import { useQueries, useQuery } from "react-query";
+import { useGoogleLogin } from "@react-oauth/google";
+import useUser from "./hooks/useUser";
 import ExpenseForm from "./components/ExpenseForm";
 import History from "./components/History";
 import Overview from "./components/Overview";
-import { useQueries, useQuery } from "react-query";
-import { getExpenses, getIncomes, getOverViewData } from "./service/getData";
-import useAddExpenseData from "./hooks/useAddExpenseData";
-import useAddIncomeData from "./hooks/useAddIncomeData";
+import { getFinanceData, getOverViewData } from "./service/getData";
 import toast, { Toaster } from "react-hot-toast";
-import useDelete from "./hooks/useDelete";
-import useUpdateData from "./hooks/useUpdateData";
-import { ImSpinner9 } from "react-icons/im";
 import GoogleSignIn from "./components/GoogleSignIn";
-import { useGoogleLogin, googleLogout as logout } from "@react-oauth/google";
 import getUserInfo from "./utils/getUserInfo";
 import NavBar from "./components/NavBar";
-import useUser from "./hooks/useUser";
 import { queryClient } from "./main";
+import { HistoryContext } from "./context/HistoryContext";
+import {
+  setDirection,
+  setExpensePageNo,
+  setIncomePageNo,
+  setSkip,
+} from "./features/pagination/paginationSlice";
 
 //
 function App() {
   const [openDiaglog, setOpenDialog] = useState(false);
-  const [categories, setCategories] = useState({
-    expense: [],
-    income: [],
-  });
-  // const [user, setUser] = useState(null);
-  const [incomeSort, setIncomeSort] = useState({
-    sortType: "desc",
-    sortField: "date",
-  });
-  const [expenseSort, setExpenseSort] = useState({
-    sortType: "desc",
-    sortField: "date",
-  });
+
+  /**
+   * Redux Hook
+   */
+  const dispatch = useDispatch();
+  const { expenseSortType, incomeSortType, expenseSortField, incomeSortField } =
+    useSelector((state) => state.sort);
+  const { incomeCategories, expenseCategories } = useSelector(
+    (state) => state.filter
+  );
+
+  const { direction, incomePageNo, expensePageNo, skip } = useSelector(
+    (state) => state.paginate
+  );
 
   const [formData, setFormData] = useState({
     id: "",
@@ -42,48 +50,92 @@ function App() {
     date: "",
     type: "",
   });
+
+  const [paginateData, setPaginateData] = useState({
+    incomeFirstDoc: null,
+    incomeLastDoc: null,
+    expenseFirstDoc: null,
+    expenseLastDoc: null,
+    initialExpenseFirstDoc: null,
+    initialExpenseLastDoc: null,
+    initialIncomeFirstDoc: null,
+    initialIncomeLastDoc: null,
+  });
+
   const { user, setUser } = useUser();
-  const { addExpenseData, isAddingExpense } = useAddExpenseData();
-  const { addIncomeData, isAddingIncome } = useAddIncomeData();
-  const { deleteRecord, isDeleting } = useDelete();
-  const { updateRecord, isUpdating } = useUpdateData();
+  const { addExpenseData } = useAddExpenseData();
+  const { addIncomeData } = useAddIncomeData();
+  const { deleteRecord } = useDelete();
+  const { updateRecord } = useUpdateData();
 
   const data = useQueries(
     user
       ? [
           {
-            queryKey: ["expenses", expenseSort, user, categories.expense],
+            queryKey: [
+              "expenses",
+              expenseSortField,
+              expenseSortType,
+              user,
+              expenseCategories,
+              expensePageNo,
+            ],
             queryFn: () =>
-              getExpenses(
-                expenseSort.sortType,
-                expenseSort.sortField,
+              getFinanceData(
+                expenseSortType,
+                expenseSortField,
                 user.email,
-                categories.expense
+                expenseCategories,
+                "Expense",
+                paginateData.expenseFirstDoc,
+                paginateData.expenseLastDoc,
+                direction,
+                skip
               ),
+            onSuccess: ({ lastDoc, firstDoc }) => {
+              if (lastDoc && firstDoc) {
+                setPaginateData((prev) => ({
+                  ...prev,
+                  initialExpenseFirstDoc: firstDoc,
+                  initialExpenseLastDoc: lastDoc,
+                }));
+              }
+            },
           },
           {
-            queryKey: ["incomes", incomeSort, user, categories.income],
+            queryKey: [
+              "incomes",
+              incomeSortField,
+              incomeSortType,
+              user,
+              incomeCategories,
+              incomePageNo,
+            ],
             queryFn: () =>
-              getIncomes(
-                incomeSort.sortType,
-                incomeSort.sortField,
+              getFinanceData(
+                incomeSortType,
+                incomeSortField,
                 user.email,
-                categories.income
+                incomeCategories,
+                "Income",
+                paginateData.incomeFirstDoc,
+                paginateData.incomeLastDoc,
+                direction,
+                skip
               ),
+            onSuccess: ({ lastDoc, firstDoc }) => {
+              if (lastDoc && firstDoc) {
+                setPaginateData((prev) => ({
+                  ...prev,
+                  initialIncomeFirstDoc: firstDoc,
+                  initialIncomeLastDoc: lastDoc,
+                })); // Save the last document snapshot
+              }
+            },
           },
         ]
       : []
   );
-
-  // const overviewData = useQuery(
-  //   user
-  //     ? {
-  //         queryKey: ["overview", user],
-  //         queryFn: () => getOverViewData(user.email),
-  //       }
-  //     : [0, 0]
-  // );
-
   const overviewData = useQuery({
     queryKey: ["overview", user?.email],
     queryFn: user ? () => getOverViewData(user.email) : async () => [0, 0], // Return a resolved promise with default data
@@ -103,8 +155,11 @@ function App() {
 
   const expenseQuery = user ? data[0] : null;
   const incomeQuery = user ? data[1] : null;
-  const expenseData = user ? data[0].data : null;
-  const incomeData = user ? data[1].data : null;
+  const expenseData = user ? data[0].data?.data : null;
+  const incomeData = user ? data[1].data?.data : null;
+  const totalExpenseRecord = user ? data[0].data?.totalRecords : 0;
+  const totalIncomeRecord = user ? data[1].data?.totalRecords : 0;
+
   // On chaning form input
   function handleChange(e) {
     let { name, value } = e.target;
@@ -171,6 +226,60 @@ function App() {
     });
   }
 
+  function handleSetPage(type) {
+    if (type === "income") {
+      return (pageNo) => {
+        setPaginateData((prev) => ({
+          ...prev,
+          incomeFirstDoc: paginateData.initialIncomeFirstDoc,
+          incomeLastDoc: paginateData.initialIncomeLastDoc,
+        }));
+        dispatch(setIncomePageNo(pageNo));
+      };
+    } else {
+      return (pageNo) => {
+        setPaginateData((prev) => ({
+          ...prev,
+          expenseFirstDoc: paginateData.initialExpenseFirstDoc,
+          expenseLastDoc: paginateData.initialExpenseLastDoc,
+        }));
+        dispatch(setExpensePageNo(pageNo));
+      };
+    }
+  }
+
+  const resetPagination = function (type) {
+    if (type === "income") {
+      setPaginateData((prev) => ({
+        ...prev,
+        incomeFirstDoc: null,
+        incomeLastDoc: null,
+      }));
+      dispatch(setIncomePageNo(1));
+    } else {
+      setPaginateData((prev) => ({
+        ...prev,
+        expenseFirstDoc: null,
+        expenseLastDoc: null,
+      }));
+
+      dispatch(setExpensePageNo(1));
+    }
+    dispatch(setDirection("forward"));
+    dispatch(setSkip(false));
+  };
+  const contextValue = {
+    onPopulateForm: handlePopulateEditData,
+    resetForm: resetForm,
+    onDelete: handleDelete,
+    resetPagination,
+    maxItemOnList: 5,
+    incomePageNo,
+    totalIncomeRecord,
+    expensePageNo,
+    totalExpenseRecord,
+    handleSetPage,
+  };
   return (
     <>
       <Toaster />
@@ -198,48 +307,20 @@ function App() {
               <Overview overviewData={overviewData && overviewData.data} />
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
-              <History
-                isLoading={incomeQuery?.isLoading || false}
-                income
-                onFilterChange={(values) => {
-                  setCategories({
-                    ...categories,
-                    income: values,
-                  });
-                }}
-                data={incomeData}
-                onPopulateForm={handlePopulateEditData}
-                resetForm={resetForm}
-                onDelete={handleDelete}
-                onSort={(sortType, sortField) => {
-                  setIncomeSort({
-                    sortType,
-                    sortField,
-                  });
-                }}
-              />
-              <History
-                isLoading={expenseQuery?.isLoading || false}
-                expense
-                onFilterChange={(values) => {
-                  setCategories({
-                    ...categories,
-                    expense: values,
-                  });
-                }}
-                data={expenseData}
-                onPopulateForm={handlePopulateEditData}
-                resetForm={resetForm}
-                onDelete={handleDelete}
-                onSort={(sortType, sortField) => {
-                  setExpenseSort({
-                    sortType,
-                    sortField,
-                  });
-                }}
-              />
-            </div>
+            <HistoryContext.Provider value={contextValue}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
+                <History
+                  isLoading={incomeQuery?.isLoading || false}
+                  type="income"
+                  data={incomeData}
+                />
+                <History
+                  isLoading={expenseQuery?.isLoading || false}
+                  type="expense"
+                  data={expenseData}
+                />
+              </div>
+            </HistoryContext.Provider>
           </div>
         </section>
       </main>

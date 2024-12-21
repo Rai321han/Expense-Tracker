@@ -6,80 +6,123 @@ import {
   orderBy,
   getAggregateFromServer,
   sum,
+  getCountFromServer,
+  startAfter,
+  limit,
+  limitToLast,
+  endBefore,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import toast from "react-hot-toast";
 
-export async function getExpenses(
+export async function getFinanceData(
   sortType = "desc",
   sortField = "date",
   email,
-  categories = []
+  categories = [],
+  type,
+  firstDoc,
+  lastDoc,
+  direction,
+  skip
 ) {
+  const limitValue = 5;
   if (!email) throw new Error("Not authenticated!");
-  let baseQuery = [
-    // collection(db, "expenseTracker"),
-    where("email", "==", email),
-    where("type", "==", "Expense"),
-    // orderBy(sortField, sortType || "desc")
-  ];
+  let baseQuery = [where("email", "==", email), where("type", "==", type)];
 
   if (categories.length > 0) {
     baseQuery.push(where("category", "in", categories));
   }
 
-  const q = query(
-    collection(db, "expenseTracker"),
-    ...baseQuery,
-    orderBy(sortField, sortType || "desc")
-  );
-
+  let totalRecords;
   try {
-    const querySnapshot = await getDocs(q);
-
-    const expenses = querySnapshot.docs.map(
-      (doc) => doc.data() // Document data
-    );
-    return expenses;
+    const totalQ = query(collection(db, "expenseTracker"), ...baseQuery);
+    const snapshot = await getCountFromServer(totalQ);
+    totalRecords = snapshot.data().count;
   } catch (error) {
-    toast.error("Cannot load data!", {
-      duration: 2000,
-    });
+    toast.error("We cannot fetch data!");
     console.log(error);
   }
-}
 
-export async function getIncomes(
-  sortType = "desc",
-  sortField = "date",
-  email,
-  categories = []
-) {
-  if (!email) throw new Error("Not authenticated!");
-  let baseQuery = [
-    // collection(db, "expenseTracker"),
-    where("email", "==", email),
-    where("type", "==", "Income"),
-    // orderBy(sortField, sortType || "desc")
-  ];
+  /***
+   * BUILDING THE QUERY
+   ***/
 
-  if (categories.length > 0) {
-    baseQuery.push(where("category", "in", categories));
+  let Query;
+  // if skip mode is true
+  if (skip) {
+    // if direction is forward
+    if (direction === "forward") {
+      const reminder = totalRecords % limitValue;
+      const adjustedLimitValue = reminder === 0 ? limitValue : reminder;
+      Query = query(
+        collection(db, "expenseTracker"),
+        ...baseQuery,
+        orderBy(sortField || "date", sortType || "desc"),
+        limitToLast(adjustedLimitValue) // Get the last two records
+      );
+    }
+    // if direction is backward
+    else
+      Query = query(
+        collection(db, "expenseTracker"),
+        ...baseQuery,
+        orderBy(sortField || "date", sortType || "desc"),
+        limit(limitValue) // Get the first two records
+      );
   }
 
-  const q = query(
-    collection(db, "expenseTracker"),
-    ...baseQuery,
-    orderBy(sortField, sortType || "desc")
-  );
+  // if skip mode is false
+  else {
+    // if direction is forward
+    if (direction === "forward") {
+      Query = lastDoc
+        ? query(
+            collection(db, "expenseTracker"),
+            ...baseQuery,
+            orderBy(sortField || "date", sortType || "desc"),
+            startAfter(lastDoc),
+            limit(limitValue)
+          )
+        : query(
+            collection(db, "expenseTracker"),
+            ...baseQuery,
+            orderBy(sortField || "date", sortType || "desc"),
+            limit(limitValue)
+          );
+    }
+    // if direction is backward
+    else {
+      Query = firstDoc
+        ? query(
+            collection(db, "expenseTracker"),
+            ...baseQuery,
+            orderBy(sortField || "date", sortType || "desc"),
+            endBefore(firstDoc),
+            limitToLast(limitValue)
+          )
+        : query(
+            collection(db, "expenseTracker"),
+            ...baseQuery,
+            orderBy(sortField || "date", sortType || "desc"),
+            // endBefore(firstDoc),
+            limitToLast(limitValue)
+          );
+    }
+  }
 
   try {
-    const querySnapshot = await getDocs(q);
-
-    const incomes = querySnapshot.docs.map(
+    const querySnapshot = await getDocs(Query);
+    const data = querySnapshot.docs.map(
       (doc) => doc.data() // Document data
     );
-    return incomes;
+
+    return {
+      data,
+      totalRecords,
+      firstDoc: querySnapshot.docs[0],
+      lastDoc: querySnapshot.docs[querySnapshot.docs.length - 1], // Last snapshot
+    };
   } catch (error) {
     toast.error("Cannot load data!", {
       duration: 2000,

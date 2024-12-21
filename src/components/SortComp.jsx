@@ -1,10 +1,19 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SortSVG } from "../utils/SVGs";
-export default function SortComp({ onSort }) {
+import { useDispatch } from "react-redux";
+import { onSorting } from "@/features/sorting/sortingSlice";
+import { HistoryContext } from "@/context/HistoryContext";
+import {
+  setExpensePageNo,
+  setIncomePageNo,
+} from "@/features/pagination/paginationSlice";
+export default function SortComp({ type }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sort, setSort] = useState("");
   const sortRef = useRef(null);
+  const dispatch = useDispatch();
+  const { resetPagination } = useContext(HistoryContext);
 
   useEffect(() => {
     isOpen && sortRef.current.focus();
@@ -13,12 +22,28 @@ export default function SortComp({ onSort }) {
   // on sorting list
   function handleSortingType(sortType) {
     if (sort === sortType) {
-      onSort("", "date");
+      dispatch(
+        onSorting({
+          type,
+          sortType: "",
+          sortField: "",
+        })
+      );
       setSort("");
     } else {
-      onSort(sortType, "amount");
+      dispatch(
+        onSorting({
+          type,
+          sortType,
+          sortField: "amount",
+        })
+      );
       setSort(sortType);
     }
+    resetPagination(type);
+    type === "expense"
+      ? dispatch(setExpensePageNo(1))
+      : dispatch(setIncomePageNo(1));
   }
 
   function handleToggle() {

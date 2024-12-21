@@ -1,21 +1,22 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { incomeCategories, expenseCategories } from "../utils/data";
 import { FilterSVG } from "../utils/SVGs";
+import { HistoryContext } from "@/context/HistoryContext";
+import { insertCategory } from "@/features/filtering/filteringSlice";
+import { useDispatch } from "react-redux";
 
-export default function FilterComp({ type, onFilterChange }) {
+export default function FilterComp({ type }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
   const filterRef = useRef(null);
   const filterBtn = useRef(null);
+  const dispatch = useDispatch();
+  const { resetPagination, setIncomePageNo, setExpensePageNo } =
+    useContext(HistoryContext);
 
   useEffect(() => {
     isOpen && filterRef.current.focus();
   }, [isOpen]);
-
-  useEffect(() => {
-    onFilterChange(categories);
-  }, [categories]);
 
   function handleToggle() {
     setIsOpen((prev) => !prev);
@@ -29,21 +30,20 @@ export default function FilterComp({ type, onFilterChange }) {
   }
 
   function handleChange(value) {
-    const categorySet = new Set(categories);
-    if (categorySet.has(value)) categorySet.delete(value);
-    else categorySet.add(value);
-    setCategories(Array.from(categorySet));
+    dispatch(insertCategory({ category: value, type: type }));
+    resetPagination(type);
+    if (type === "income") setIncomePageNo(1);
+    else setExpensePageNo(1);
   }
 
   let options;
 
-  if (type === "Expense") options = expenseCategories;
+  if (type === "expense") options = expenseCategories;
   else options = incomeCategories;
 
   const renderOptions = options.map((option) => (
     <label
       key={option}
-      // onMouseDown={(e) => e.preventDefault()}
       className="cursor-pointer inline-flex items-center px-4 py-2 gap-2 text-sm text-gray-700"
     >
       <input
@@ -83,18 +83,13 @@ export default function FilterComp({ type, onFilterChange }) {
           `}
         role="menu"
         ref={filterRef}
-        // onBlur={() => setIsOpen(false)}
         onBlur={handleBlur}
         aria-orientation="vertical"
         aria-labelledby="filter-button"
         tabIndex="-1"
         id="filter-dropdown"
       >
-        <div
-          className="py-1"
-          role="none"
-          // onMouseDown={(e) => e.stopPropagation()}
-        >
+        <div className="py-1" role="none">
           {renderOptions}
         </div>
       </div>

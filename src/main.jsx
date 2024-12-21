@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UserProvider from "./context/UserProvider.jsx";
+import { Provider } from "react-redux";
+import { store } from "./app/store.js";
 export const queryClient = new QueryClient();
 
 <Routes>
@@ -21,7 +23,9 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
-          <App />
+          <Provider store={store}>
+            <App />
+          </Provider>
         </UserProvider>
       </QueryClientProvider>
     </BrowserRouter>
