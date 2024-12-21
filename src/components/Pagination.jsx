@@ -31,12 +31,14 @@ export default function Pagination({
           handleDirection("backward");
           handleSkip(true);
         }}
+        className="p-1 md:px-2 md:py-1 bg-gray-100 hover:bg-gray-200 rounded-md"
       >
         <MdSkipPrevious
-          className={`${activePage !== 1 && " fill-black"} fill-gray-400`}
+          className={`${activePage !== 1 ? " fill-black" : "fill-gray-400"} `}
         />
       </button>
       <button
+        className="p-1 md:px-2 md:py-1 bg-gray-100 hover:bg-gray-200 rounded-md"
         disabled={activePage === 1}
         onClick={() => {
           setPage(activePage - 1);
@@ -47,13 +49,14 @@ export default function Pagination({
         }}
       >
         <MdNavigateBefore
-          className={`${activePage > 1 && " fill-black"} fill-gray-400`}
+          className={`${activePage > 1 ? " fill-black" : "fill-gray-400"}`}
         />
       </button>
-      <div className="px-2 py-1 bg-gray-50 text-gray-500 rounded-sm">
+      <div className="px-2 py-1 bg-gray-50 text-gray-500 rounded-sm text-sm">
         Page {activePage} of {numberOfPage}
       </div>
       <button
+        className="p-1 md:px-2 md:py-1 bg-gray-100 hover:bg-gray-200 rounded-md"
         disabled={activePage === numberOfPage}
         onClick={() => {
           setPage(activePage + 1);
@@ -66,11 +69,12 @@ export default function Pagination({
       >
         <MdNavigateNext
           className={`${
-            activePage < numberOfPage && " fill-black"
-          } fill-gray-400`}
+            activePage < numberOfPage ? " fill-black" : "fill-gray-400"
+          } `}
         />
       </button>
       <button
+        className="p-1 md:px-2 md:py-1 bg-gray-100 hover:bg-gray-200 rounded-md"
         disabled={activePage === numberOfPage}
         onClick={() => {
           setPage(numberOfPage);
@@ -82,8 +86,8 @@ export default function Pagination({
       >
         <MdSkipNext
           className={`${
-            activePage !== numberOfPage && " fill-black"
-          } fill-gray-400`}
+            activePage !== numberOfPage ? "fill-black" : "fill-gray-400"
+          }`}
         />
       </button>
     </div>
