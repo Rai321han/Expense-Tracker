@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="flex flex-col gap-3 items-center sm:items-start col-start-1 col-end-2 row-start-1 row-end-2">
         <div className="flex flex-row gap-3 items-center">
           <img
-            src="/public/assets/image/logo_expense_tracker.png"
+            src="/assets/image/logo_expense_tracker.png"
             className="w-10 h-10"
             alt="logo"
           />

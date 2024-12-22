@@ -30,7 +30,7 @@ export default function Landing() {
         <div className="grid grid-cols-1 grid-rows-2  md:gap-5 md:grid-cols-2 md:grid-rows-1">
           <div className="rounded-lg row-start-1 row-end-2 md:col-start-1 md:col-end-2 md:row-start-1 md:row-end-2 flex justify-center items-center">
             <img
-              src="/public/assets/gifs/categories.gif"
+              src="/assets/gifs/categories.gif"
               className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px]"
             />
           </div>
@@ -52,8 +52,8 @@ export default function Landing() {
         <div className="grid grid-cols-1 grid-rows-2  md:gap-5 md:grid-cols-2 md:grid-rows-1">
           <div className="rounded-lg row-start-1 row-end-2 md:col-start-2 md:col-end-3 md:row-start-1 md:row-end-2 flex justify-center items-center">
             <img
-              src="/public/assets/gifs/balance.gif"
-              className="w-[250px] h-[250px]"
+              src="/assets/gifs/balance.gif"
+              className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px]"
             />
           </div>
 
@@ -73,8 +73,8 @@ export default function Landing() {
         <div className="grid grid-cols-1 grid-rows-2 gap-2 md:gap-5 md:grid-cols-2 md:grid-rows-1">
           <div className="rounded-lg row-start-1 row-end-2 md:col-start-1 md:col-end-2 md:row-start-1 md:row-end-2 flex justify-center items-center">
             <img
-              src="/public/assets/gifs/history.gif"
-              className="w-[250px] h-[250px]"
+              src="/assets/gifs/history.gif"
+              className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px]"
             />
           </div>
 
