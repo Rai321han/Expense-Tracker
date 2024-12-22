@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { Link } from "react-router-dom";
 import ProfileDropDown from "./ProfileDropDown";
 import SignIn from "./SignIn";
 import useUser from "@/hooks/useUser";
@@ -6,11 +7,16 @@ import useUser from "@/hooks/useUser";
 export default function NavBar() {
   const { user } = useUser();
   return (
-    <nav className="sticky top-0 z-10">
+    <nav className="sticky top-0 z-10 p-3">
       <div className=" grid grid-cols-[repeat(3,1fr)] grid-rows-1 max-w-7xl items-center bg-[#F9FAFB] w-full justify-between py-1  border px-4 rounded-md mx-auto">
-        <div>
-          <img src="/assets/image/logo_expense_tracker.png" className="h-12" />
-        </div>
+        <Link to={"/"}>
+          <div>
+            <img
+              src="/assets/image/logo_expense_tracker.png"
+              className="h-12"
+            />
+          </div>
+        </Link>
 
         <div className="block">
           {/* <ul className="flex gap-4 text-gray-500  font-medium justify-center">

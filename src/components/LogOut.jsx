@@ -7,6 +7,7 @@ export default function LogOut() {
   const { setUser } = useUser();
   return (
     <div
+      className="w-full text-red-700 font-semibold"
       onClick={() => {
         googleLogout();
         setUser(null);
