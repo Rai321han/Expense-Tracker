@@ -12,8 +12,6 @@ export default function ExpenseForm({
   let renderOptions = [];
   const updatedTab = formData.type || tab;
 
-  // console.log(formData);
-
   if (updatedTab === "Expense") {
     renderOptions = expenseCategories.map((option) => (
       <option key={option} value={option}>
@@ -26,6 +24,18 @@ export default function ExpenseForm({
         {option}
       </option>
     ));
+
+  const date = new Date();
+  const thisMonthStartDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    1
+  ).toLocaleDateString("en-CA"); // 'en-CA' ensures YYYY-MM-DD format
+  const thisMonthEndDate = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).toLocaleDateString("en-CA");
 
   return (
     <form
@@ -109,6 +119,8 @@ export default function ExpenseForm({
             type="date"
             name="date"
             id="date"
+            min={thisMonthStartDate}
+            max={thisMonthEndDate}
             value={formData.date}
             required
             onChange={(e) => onChange(e)}

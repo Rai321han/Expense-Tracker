@@ -144,11 +144,15 @@ function App() {
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const userData = await getUserInfo(tokenResponse);
-      queryClient.invalidateQueries(["expenses"]);
-      queryClient.invalidateQueries(["incomes"]);
-      setUser(userData);
-      setOpenDialog(false);
+      try {
+        const userData = await getUserInfo(tokenResponse);
+        queryClient.invalidateQueries(["expenses"]);
+        queryClient.invalidateQueries(["incomes"]);
+        setUser(userData);
+        setOpenDialog(false);
+      } catch (error) {
+        toast.error("Error while fetching user info!");
+      }
     },
     onError: () => toast.error("Error while login!"),
   });
@@ -304,7 +308,7 @@ function App() {
             {overviewData.isLoading ? (
               <Overview overviewData={[0, 0]} />
             ) : (
-              <Overview overviewData={overviewData && overviewData.data} />
+              <Overview overviewData={overviewData?.data} />
             )}
 
             <HistoryContext.Provider value={contextValue}>

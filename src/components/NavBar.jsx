@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import LogOut from "./LogOut";
+import ProfileDropDown from "./ProfileDropDown";
 import SignIn from "./SignIn";
 import useUser from "@/hooks/useUser";
 
 export default function NavBar() {
   const { user } = useUser();
   return (
-    <nav>
+    <nav className="sticky top-0 z-10">
       <div className=" grid grid-cols-[repeat(3,1fr)] grid-rows-1 max-w-7xl items-center bg-[#F9FAFB] w-full justify-between py-1  border px-4 rounded-md mx-auto">
         <div>
           <img src="/assets/image/logo_expense_tracker.png" className="h-12" />
@@ -22,17 +22,19 @@ export default function NavBar() {
 
         <div className=" flex flex-row gap-2 justify-end">
           {/* <div className="p-2 text-zinc-500">December 2024</div> */}
-          {user ? <LogOut /> : <SignIn />}
+          {!user && <SignIn />}
           {user && (
-            <div className="rounded-full  bg-teal-600 text-white w-10">
-              <div>
-                <img
-                  src={user.picture}
-                  alt="profile picture"
-                  className="rounded-full"
-                />
+            <ProfileDropDown>
+              <div className="rounded-full  bg-teal-600 text-white w-10">
+                <div>
+                  <img
+                    src={user.picture}
+                    alt="profile picture"
+                    className="rounded-full"
+                  />
+                </div>
               </div>
-            </div>
+            </ProfileDropDown>
           )}
         </div>
       </div>

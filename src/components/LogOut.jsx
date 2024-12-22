@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
 import useUser from "@/hooks/useUser";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
 import { googleLogout } from "@react-oauth/google";
 
 export default function LogOut() {
   const { setUser } = useUser();
   return (
-    <Button
-      className="bg-[#F9FAFB] border text-gray-400"
+    <div
       onClick={() => {
         googleLogout();
         setUser(null);
@@ -15,6 +14,6 @@ export default function LogOut() {
       }}
     >
       Logout
-    </Button>
+    </div>
   );
 }
