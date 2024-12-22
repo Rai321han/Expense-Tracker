@@ -1,29 +1,31 @@
 export default function Footer() {
   return (
-    <footer className="grid grid-cols-1 grid-rows-3 sm:grid-cols-3 sm:grid-rows-1 bg-teal-900 text-white text-center p-10">
-      <div className="flex flex-col gap-3 items-center sm:items-start col-start-1 col-end-2 row-start-1 row-end-2">
-        <div className="flex flex-row gap-3 items-center">
-          <img
-            src="/assets/image/logo_expense_tracker.png"
-            className="w-10 h-10"
-            alt="logo"
-          />
-          <p>Expense Tracker</p>
-        </div>
-        <div>
-          <p className="text-xs font-extralight max-w-[200px] text-center sm:text-left">
+    <footer className=" bg-teal-900 flex flex-row justify-center items-center">
+      {/* Logo and Description */}
+      <div className="grid grid-rows-3 sm:grid-cols-[repeat(3,1fr)] sm:grid-rows-1 text-white p-10 gap-0 sm:gap-4 grid-flow-col w-full max-w-[1200px]">
+        <div className="flex flex-col items-center sm:items-start row-span-1 sm:col-span-1 ">
+          <div className="flex flex-row gap-3 items-center">
+            <img
+              src="/assets/image/logo_expense_tracker.png"
+              className="w-10 h-10"
+              alt="logo"
+            />
+            <p className="text-lg font-semibold">Expense Tracker</p>
+          </div>
+          <p className="text-xs font-extralight max-w-[200px] text-center sm:text-left mt-2">
             Expense Tracker is a simple app that helps you track your expenses
             and income.
           </p>
         </div>
-      </div>
-      <div className="self-center row-start-3 row-end-4 col-start-1 col-end-2 sm:row-start-1 sm:row-end-2 sm:col-start-2 sm:col-end-3">
-        <p className="text-xs">
-          © 2024 Expense Tracker. <br /> All rights reserved.
-        </p>
-      </div>
-      <div className="self-center sm:justify-self-end row-start-2 row-end-3 col-start-1 col-end-2 sm:row-start-1 sm:row-end-2 sm:col-start-3 sm:col-end-4">
-        <div className="flex flex-row gap-3 items-center justify-center">
+
+        {/* Copyright Information */}
+        <div className="flex flex-col justify-center items-center row-span-1 sm:col-span-1">
+          <p className="text-xs">© 2024 Expense Tracker.</p>
+          <p className="text-xs">All rights reserved.</p>
+        </div>
+
+        {/* Social Links */}
+        <div className="flex justify-center sm:justify-end items-center  row-span-1 sm:col-span-1 gap-4">
           <a href="https://facebook.com">
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path
@@ -36,7 +38,6 @@ export default function Footer() {
               ></path>
             </svg>
           </a>
-
           <a href="https://facebook.com">
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path
@@ -49,7 +50,6 @@ export default function Footer() {
               ></path>
             </svg>
           </a>
-
           <a href="https://facebook.com">
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path

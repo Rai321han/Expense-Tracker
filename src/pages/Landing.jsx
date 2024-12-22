@@ -1,4 +1,3 @@
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -35,13 +34,11 @@ export default function Landing() {
             />
           </div>
 
-          <div className="p-2 md:p-5 flex flex-col  row-start-2 row-end-3 md:col-start-2 md:col-end-3 md:row-start-1 md:row-end-2 justify-center items-start">
+          <div className="p-2 md:p-5 flex flex-col gap-2 row-start-2 row-end-3 md:col-start-2 md:col-end-3 md:row-start-1 md:row-end-2 justify-center items-start">
             <h2 className="text-3xl font-semibold text-teal-800">
-              {/* Title */}
               <span className="font-extrabold">Categorize</span>
               <br /> <span className="font-light">your expenses</span>
             </h2>
-            {/* subtext under this title */}
             <p className="text-gray-600 max-w-[400px]">
               Categorize your expenses to keep track of your spending habits.
               This will help you to understand where your money is going.
@@ -91,7 +88,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <Footer />
     </>
   );
 }
