@@ -25,8 +25,11 @@ export default function Footer() {
         </div>
 
         {/* Social Links */}
-        <div className="flex justify-center sm:justify-end items-center  row-span-1 sm:col-span-1 gap-4">
-          <a href="https://facebook.com">
+        <div className="flex justify-center   items-center  row-span-1 sm:col-span-1 gap-4">
+          <a
+            href="https://www.facebook.com/abcde.fghijklmnopqrstuvwxyzlll"
+            target="_blank"
+          >
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path
                 fill="#0f766e"
@@ -38,7 +41,10 @@ export default function Footer() {
               ></path>
             </svg>
           </a>
-          <a href="https://facebook.com">
+          <a
+            href="https://www.linkedin.com/in/raihan-uddin-6681411b2/"
+            target="_blank"
+          >
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path
                 fill="#0f766e"
@@ -50,7 +56,7 @@ export default function Footer() {
               ></path>
             </svg>
           </a>
-          <a href="https://facebook.com">
+          <a href="https://x.com/RaihanU46038448" target="_blank">
             <svg width="30" height="30" viewBox="0 0 48 48">
               <path
                 fill="#0f766e"

@@ -178,10 +178,10 @@ function Dashboard() {
 
   //adding new item
   function handleAddSubmit(data, type) {
-    // if (!user) {
-    //   setOpenDialog(true);
-    //   return;
-    // }
+    if (!user) {
+      setOpenDialog(true);
+      return;
+    }
 
     if (data.amount === "") return;
 
@@ -289,7 +289,7 @@ function Dashboard() {
       {/* <Toaster />
       <NavBar /> */}
       <GoogleSignIn open={openDiaglog} setOpen={setOpenDialog} login={login} />
-      <main className="p-3 md:p-3 lg:p-0 relative mx-auto my-5 w-full max-w-7xl">
+      <main className="p-3 md:p-3 lg:p-0 relative mx-auto my-5 w-full max-w-7xl min-h-[90vh]">
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="p-6 py-8 bg-[#F9FAFB] border rounded-md">
             <h2 className="text-3xl font-semibold leading-7 text-gray-800 text-center">
