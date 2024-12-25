@@ -207,6 +207,7 @@ function Dashboard() {
   }
 
   function handlePopulateEditData(data) {
+    console.log(user);
     setFormData(data);
   }
 
