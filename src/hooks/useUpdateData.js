@@ -9,7 +9,10 @@ export default function useUpdateData() {
       const { type } = variable;
       if (type === "Expense") {
         queryClient.invalidateQueries(["expenses"]);
-      } else queryClient.invalidateQueries(["incomes"]);
+      } else {
+        queryClient.invalidateQueries(["incomes"]);
+      }
+      queryClient.invalidateQueries(["overview"]);
       toast.success("Updated successfully!");
     },
     onError: () => {
